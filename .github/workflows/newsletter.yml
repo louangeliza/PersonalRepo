@@ -1,0 +1,36 @@
+name: Send newsletter on new post
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  check-and-send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run newsletter check
+        env:
+          NEWSLETTER_RSS_FEED: ${{ secrets.NEWSLETTER_RSS_FEED }}
+          MAILERLITE_API_KEY: ${{ secrets.MAILERLITE_API_KEY }}
+          MAILERLITE_GROUP_ID: ${{ secrets.MAILERLITE_GROUP_ID }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RESEND_FROM_EMAIL: ${{ secrets.RESEND_FROM_EMAIL }}
+        run: node scripts/send-newsletter.mjs
+
+      - name: Commit updated state
+        run: |
+          git config user.name "newsletter-bot"
+          git config user.email "actions@github.com"
+          git add .github/state/last-post.json
+          git diff --staged --quiet || git commit -m "chore: update last sent post"
+          git push
