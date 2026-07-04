@@ -11,21 +11,7 @@ export type BlogPost = {
   readTime: string;
   link: string;
 };
-function decodeEntities(str: string): string {
-  return str
-    .replace(/&#8220;/g, '"')
-    .replace(/&#8221;/g, '"')
-    .replace(/&#8216;/g, "'")
-    .replace(/&#8217;/g, "'")
-    .replace(/&#8211;/g, "–")
-    .replace(/&#8212;/g, "—")
-    .replace(/&hellip;/g, "…")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)));
-}
+
 export type BlogComment = {
   id: number;
   authorName: string;
@@ -353,5 +339,14 @@ function decodeHtml(value: string) {
     .replaceAll("&#039;", "'")
     .replaceAll("&apos;", "'")
     .replaceAll("&lt;", "<")
-    .replaceAll("&gt;", ">");
+    .replaceAll("&gt;", ">")
+    .replaceAll("&nbsp;", " ")
+    .replaceAll("&hellip;", "…")
+    .replaceAll("&#8220;", "\u201C")
+    .replaceAll("&#8221;", "\u201D")
+    .replaceAll("&#8216;", "\u2018")
+    .replaceAll("&#8217;", "\u2019")
+    .replaceAll("&#8211;", "\u2013")
+    .replaceAll("&#8212;", "\u2014")
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)));
 }
