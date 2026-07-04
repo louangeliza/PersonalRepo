@@ -11,7 +11,21 @@ export type BlogPost = {
   readTime: string;
   link: string;
 };
-
+function decodeEntities(str: string): string {
+  return str
+    .replace(/&#8220;/g, '"')
+    .replace(/&#8221;/g, '"')
+    .replace(/&#8216;/g, "'")
+    .replace(/&#8217;/g, "'")
+    .replace(/&#8211;/g, "–")
+    .replace(/&#8212;/g, "—")
+    .replace(/&hellip;/g, "…")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)));
+}
 export type BlogComment = {
   id: number;
   authorName: string;
