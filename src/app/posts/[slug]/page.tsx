@@ -4,23 +4,15 @@ import { notFound } from "next/navigation";
 import { getCommentUrl, getComments, getPostBySlug } from "@/lib/wordpress";
 
 type PostPageProps = {
-  params: Promise<{
-    slug: string;
-  }>;
+  params: Promise<{ slug: string }>;
 };
 
 export async function generateMetadata({ params }: PostPageProps): Promise<Metadata> {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
-
-  if (!post) {
-    return {
-      title: "Article not found | Liza.dev",
-    };
-  }
-
+  if (!post) return { title: "Article not found | Liza Notes" };
   return {
-    title: `${post.title} | Liza.dev`,
+    title: `${post.title} | Liza Notes`,
     description: post.excerpt,
   };
 }
@@ -28,107 +20,142 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
 export default async function PostPage({ params }: PostPageProps) {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
-
-  if (!post) {
-    notFound();
-  }
+  if (!post) notFound();
 
   const comments = await getComments(post.id);
   const wordpressCommentUrl = getCommentUrl(post);
 
   return (
-    <main className="min-h-screen bg-[#f8f1e7] px-6 py-10 text-[#1e1d1a]">
-      <article className="mx-auto max-w-5xl">
-        <Link href="/posts" className="text-sm font-semibold text-[#385052]">
-          Back to articles
-        </Link>
+    <main className="min-h-screen bg-[#F5EFE3] text-[#1B2D2F]">
 
-        <header className="mt-12 border-b border-[#d8cdbc] pb-10">
-          <div className="grid gap-8 lg:grid-cols-[1fr_260px] lg:items-end">
-            <div>
-              <p className="font-mono text-xs font-semibold uppercase tracking-[0.24em] text-[#9a4f2f]">
-                {post.category}
-              </p>
-              <h1 className="mt-4 max-w-4xl text-5xl font-semibold leading-tight sm:text-6xl">
-                {post.title}
-              </h1>
-            </div>
-            <div className="rounded-lg border border-[#d8cdbc] bg-[#fffaf2] p-5 text-sm text-[#5f5a50]">
-              <p className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-[#9a4f2f]">
-                Essay info
-              </p>
-              <div className="mt-4 space-y-3">
-                <p className="flex justify-between gap-4">
-                  <span>Published</span>
-                  <span className="font-semibold text-[#1e1d1a]">{post.date}</span>
-                </p>
-                <p className="flex justify-between gap-4">
-                  <span>Read time</span>
-                  <span className="font-semibold text-[#1e1d1a]">{post.readTime}</span>
-                </p>
-              </div>
-            </div>
+      {/* NAV */}
+      <header className="sticky top-0 z-20 border-b border-[#DDD0BF] bg-[#F5EFE3]/90 backdrop-blur">
+        <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+          <Link href="/" className="group flex items-center gap-3">
+            <span className="grid size-9 place-items-center rounded-full bg-[#1B2D2F] text-sm font-bold text-[#F5EFE3] transition group-hover:bg-[#C05A3A]">
+              L
+            </span>
+            <span className="font-mono text-xs font-semibold uppercase tracking-[0.22em]">
+              Liza Notes
+            </span>
+          </Link>
+          <Link
+            href="/posts"
+            className="text-sm font-semibold text-[#6B5D52] transition hover:text-[#1B2D2F]"
+          >
+            ← All essays
+          </Link>
+        </nav>
+      </header>
+
+      <article className="mx-auto max-w-3xl px-6 pb-24 pt-14">
+
+        {/* HEADER */}
+        <header className="mb-12">
+          <p className="font-mono text-xs font-semibold uppercase tracking-[0.22em] text-[#C05A3A]">
+            {post.category}
+          </p>
+          <h1 className="font-display mt-4 text-4xl font-semibold leading-tight sm:text-5xl lg:text-6xl">
+            {post.title}
+          </h1>
+          <p className="mt-5 text-lg leading-8 text-[#6B5D52]">
+            {post.excerpt}
+          </p>
+
+          {/* Meta strip */}
+          <div className="mt-8 flex flex-wrap items-center gap-4 border-t border-[#DDD0BF] pt-6 text-sm text-[#9C8B7E]">
+            <span className="flex items-center gap-1.5">
+              <span className="size-1.5 rounded-full bg-[#C05A3A]" />
+              Liza Louange
+            </span>
+            <span className="h-3.5 w-px bg-[#DDD0BF]" />
+            <span>{post.date}</span>
+            <span className="h-3.5 w-px bg-[#DDD0BF]" />
+            <span>{post.readTime}</span>
           </div>
         </header>
 
-        <div className="mx-auto max-w-3xl">
-          <div
-            className="blog-content mt-10"
-            dangerouslySetInnerHTML={{ __html: post.content }}
-          />
+        {/* CONTENT */}
+        <div
+          className="blog-content"
+          dangerouslySetInnerHTML={{ __html: post.content }}
+        />
+
+        {/* FOOTER NAV */}
+        <div className="mt-16 flex items-center justify-between border-t border-[#DDD0BF] pt-8">
+          <Link
+            href="/posts"
+            className="rounded-full border border-[#C9BAA8] px-5 py-2.5 text-sm font-semibold text-[#1B2D2F] transition hover:border-[#1B2D2F]"
+          >
+            ← Back to essays
+          </Link>
+          <Link
+            href="/"
+            className="rounded-full bg-[#1B2D2F] px-5 py-2.5 text-sm font-semibold text-[#F5EFE3] transition hover:bg-[#C05A3A]"
+          >
+            Home
+          </Link>
         </div>
 
-        <section className="mx-auto mt-14 max-w-3xl border-t border-[#d8cdbc] pt-10">
-          <p className="font-mono text-xs font-semibold uppercase tracking-[0.24em] text-[#9a4f2f]">
+        {/* COMMENTS */}
+        <section className="mt-16 border-t border-[#DDD0BF] pt-12">
+          <p className="font-mono text-xs font-semibold uppercase tracking-[0.22em] text-[#C05A3A]">
             Reader notes
           </p>
-          <h2 className="mt-3 text-3xl font-semibold">Comments & reviews</h2>
-          <p className="mt-4 text-sm leading-6 text-[#5f5a50]">
-            Comments are powered by WordPress, so they can be moderated from the same
-            dashboard where you write posts. Approved comments appear here automatically.
-          </p>
+          <h2 className="font-display mt-2 text-3xl font-semibold">
+            Comments
+          </h2>
 
           <div className="mt-8 space-y-4">
             {comments.length > 0 ? (
               comments.map((comment) => (
                 <article
-                  className="rounded-lg border border-[#e2d8c9] bg-[#fffaf2] p-5 shadow-[0_12px_34px_rgba(68,52,35,0.05)]"
                   key={comment.id}
+                  className="rounded-xl border border-[#E5D9CA] bg-[#FDF9F3] p-6"
                 >
-                  <div className="flex items-center justify-between gap-4 text-sm">
-                    <p className="font-semibold text-[#1e1d1a]">{comment.authorName}</p>
-                    <p className="text-[#756d60]">{comment.date}</p>
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <span className="grid size-8 place-items-center rounded-full bg-[#1B2D2F] text-xs font-bold text-[#F5EFE3]">
+                        {comment.authorName?.[0]?.toUpperCase() ?? "?"}
+                      </span>
+                      <p className="text-sm font-semibold text-[#1B2D2F]">
+                        {comment.authorName}
+                      </p>
+                    </div>
+                    <p className="text-xs text-[#9C8B7E]">{comment.date}</p>
                   </div>
                   <div
-                    className="blog-comment mt-3"
+                    className="blog-comment mt-4 pl-11"
                     dangerouslySetInnerHTML={{ __html: comment.content }}
                   />
                 </article>
               ))
             ) : (
-              <p className="rounded-lg border border-dashed border-[#cfc3b2] bg-[#fffaf2] p-5 text-sm text-[#5f5a50]">
-                No comments yet. Be the first to leave a note.
+              <p className="rounded-xl border border-dashed border-[#C9BAA8] bg-[#FDF9F3] p-6 text-sm text-[#6B5D52]">
+                No comments yet — be the first to leave a note.
               </p>
             )}
           </div>
 
-          <div className="mt-6 rounded-lg border border-[#d8cdbc] bg-[#fffaf2] p-5">
-            <h3 className="text-xl font-semibold">Leave a comment</h3>
-            <p className="mt-3 text-sm leading-6 text-[#5f5a50]">
-              WordPress.com handles the actual comment form for now. Leave your note
-              there, and once it is approved it will show up on this page too.
-            </p>
-            {wordpressCommentUrl ? (
-              <a
-                href={wordpressCommentUrl}
-                className="mt-5 inline-flex rounded-md bg-[#243b3d] px-5 py-3 text-sm font-semibold text-[#fffaf2] transition hover:bg-[#385052]"
+          {/* Leave a comment */}
+          {wordpressCommentUrl && (
+            <div className="mt-6 rounded-xl border border-[#DDD0BF] bg-[#FDF9F3] p-6">
+              <h3 className="font-display text-xl font-semibold">
+                Leave a note
+              </h3>
+              <p className="mt-2 text-sm leading-6 text-[#6B5D52]">
+                Comments are handled by WordPress — once approved they show up here automatically.
+              </p>
+              
+              <a  href={wordpressCommentUrl}
                 target="_blank"
                 rel="noreferrer"
+                className="mt-5 inline-flex rounded-full bg-[#1B2D2F] px-5 py-2.5 text-sm font-semibold text-[#F5EFE3] transition hover:bg-[#C05A3A]"
               >
-                Comment on WordPress
+                Comment on WordPress →
               </a>
-            ) : null}
-          </div>
+            </div>
+          )}
         </section>
       </article>
     </main>
