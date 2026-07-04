@@ -58,9 +58,6 @@ export default async function PostPage({ params }: PostPageProps) {
           <h1 className="font-display mt-4 text-4xl font-semibold leading-tight sm:text-5xl lg:text-6xl">
             {post.title}
           </h1>
-          <p className="mt-5 text-lg leading-8 text-[#6B5D52]">
-            {post.excerpt}
-          </p>
 
           {/* Meta strip */}
           <div className="mt-8 flex flex-wrap items-center gap-4 border-t border-[#DDD0BF] pt-6 text-sm text-[#9C8B7E]">
